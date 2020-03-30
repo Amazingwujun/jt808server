@@ -135,9 +135,9 @@ public final class Jt808Decoder extends ByteToMessageDecoder {
      * @return {@link Jt808Message}
      */
     private Jt808Message decode2message(byte[] frame) {
-        if (frame.length < 12) {
+        if (frame == null || frame.length < 12) {
             //消息长度最少也是12个字节 - 协议头
-            return Jt808MessageFactory.newInvalidMessage(new DecoderException("消息长度" + frame.length + "< 12"));
+            return Jt808MessageFactory.newInvalidMessage(new DecoderException("解包后的消息不合法"));
         }
         //上行消息转义
         byte[] escapeBytes = ByteUtils.inboundEscape(frame);
@@ -157,6 +157,7 @@ public final class Jt808Decoder extends ByteToMessageDecoder {
             return Jt808MessageFactory.newInvalidMessage(new DecoderException("消息体长度异常"));
         }
 
-        return new Jt808Message(frame, header);
+        return Jt808MessageFactory.fromDecoder(frame, header);
     }
+
 }

@@ -42,6 +42,7 @@ public class Jt808Header {
 
     //@formatter:on
 
+
     public Jt808Header(MessageId messageId, String msisdn, int sequenceId, int encryptType, int bodyLength,
                        boolean isSplit, int splitMessageLen, int splitMessageSequenceId) {
         this.messageId = messageId;
@@ -54,9 +55,17 @@ public class Jt808Header {
         this.splitMessageSequenceId = splitMessageSequenceId;
     }
 
-    public static Jt808Header universalHeader(MessageId messageId, String msisdn, int sequenceId, int bodyLength) {
-        return new Jt808Header(messageId, msisdn, sequenceId, 0, bodyLength, false, 0, 0);
+    /**
+     * 通用响应构建。平台对车辆的通用响应固定头只需要 <b>messageId</b> 即可构建，其它数据头写死即可
+     *
+     * @param messageId {@link MessageId}
+     * @return 通用响应头
+     */
+    public static Jt808Header universalHeader(MessageId messageId) {
+        return new Jt808Header(messageId, "018812345678", 0, 0, 5,
+                false, 0, 0);
     }
+
 
     /**
      * 由字节数值转换而来

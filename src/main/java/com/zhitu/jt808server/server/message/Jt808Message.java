@@ -1,5 +1,6 @@
 package com.zhitu.jt808server.server.message;
 
+import com.zhitu.jt808server.common.constant.MessageId;
 import com.zhitu.jt808server.utils.ByteUtils;
 import io.netty.handler.codec.DecoderResult;
 
@@ -28,6 +29,7 @@ public class Jt808Message {
 
     //@formatter:on
 
+
     public Jt808Message(Jt808Header jt808Header, byte[] body) {
         this(null, jt808Header, body, DecoderResult.SUCCESS);
     }
@@ -42,23 +44,47 @@ public class Jt808Message {
         this(original, jt808Header, null, DecoderResult.SUCCESS);
     }
 
+
     public Jt808Message(Jt808Header jt808Header, byte[] body, DecoderResult decoderResult) {
-        this.jt808Header = jt808Header;
-        this.body = body;
-        this.decoderResult = decoderResult;
+        this(null, jt808Header, body, decoderResult);
     }
 
-    public Jt808Message(byte[] original, Jt808Header jt808Header, byte[] body, DecoderResult decoderResult) {
+    private Jt808Message(byte[] original, Jt808Header jt808Header, byte[] body, DecoderResult decoderResult) {
         this.original = original;
         this.jt808Header = jt808Header;
         this.body = body;
         this.decoderResult = decoderResult;
+
+        //如果 original 为空，则必须构建 original
+        //inbound 消息时不会触发这个逻辑的，只有 outbound 消息才会触发要求计算出 original
+        if (original == null && decoderResult.isSuccess()) {
+            
+            if (MessageId.PING == jt808Header.getMessageId()) {
+                jt808Header.setBodyLength(0);
+                byte[] headerBytes = jt808Header.toBytes();
+                byte bcc = ByteUtils.bccCalculate(headerBytes);
+                this.original = ByteUtils.byteMerge(headerBytes, new byte[]{bcc});
+            } else {
+                if (body == null) {
+                    throw new IllegalArgumentException("构建 Jt808Message 的body 不能为空");
+                }
+                jt808Header.setBodyLength(body.length);
+                byte[] headerBytes = jt808Header.toBytes();
+                byte[] headerAndBody = ByteUtils.byteMerge(headerBytes, body);
+                byte bcc = ByteUtils.bccCalculate(headerAndBody);
+                this.original = ByteUtils.byteMerge(headerAndBody, new byte[]{bcc});
+            }
+        }
     }
 
     /**
      * 由 {@link #original} 中抽取出消息体数据
      */
-    public byte[] extractPayloadFromOriginal() {
+    public byte[] extractBodyFromOriginal() {
+        if (body != null) {
+            return body;
+        }
+
         int bodyLength = jt808Header.getBodyLength();
         int headLen = jt808Header.length();
 
@@ -66,16 +92,9 @@ public class Jt808Message {
     }
 
     /**
-     * 由 {@link #original} 得出最终的报文
+     * 由 {@link #original} 转换为响应报文
      */
-    public byte[] getBody() {
-        if (body != null) {
-            return body;
-        }
-        if (original == null) {
-            throw new IllegalArgumentException("original 不能为空");
-        }
-
+    public byte[] toResponse() {
         //转义
         byte[] outboundEscape = ByteUtils.outboundEscape(original);
 
@@ -95,10 +114,6 @@ public class Jt808Message {
         return jt808Header;
     }
 
-    public void setOriginal(byte[] original) {
-        this.original = original;
-    }
-
     public DecoderResult decoderResult() {
         return decoderResult;
     }
@@ -109,8 +124,9 @@ public class Jt808Message {
     @Override
     public String toString() {
         return "Jt808Message{" +
-                ", jt808Header=" + jt808Header +
-                "original=" + ByteUtils.byteArrayToHexString(original) +
+                "jt808Header=" + jt808Header +
+                ", original=" + ByteUtils.byteArrayToHexString(original) +
                 '}';
     }
+
 }

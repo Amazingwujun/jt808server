@@ -36,6 +36,7 @@ public final class ServerHandler extends SimpleChannelInboundHandler<Jt808Messag
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+
     }
 
     @Override

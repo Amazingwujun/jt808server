@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
  * @date 2020-03-27 10:16
  */
 @Component
-public class SignInHandler implements MessageHandler {
+public class SignInHandler extends AbstractSessionHandler {
 
     @Override
     public void process(ChannelHandlerContext ctx, Jt808Message jt808Message) {
@@ -24,13 +24,14 @@ public class SignInHandler implements MessageHandler {
         int headerLen = header.length();
 
         //获得客户端令牌
-        byte[] body = jt808Message.extractPayloadFromOriginal();
+        byte[] body = jt808Message.extractBodyFromOriginal();
         String token = new String(body, Charset.forName("gbk"));
 
         //todo 请求终端鉴权服务，对车辆登入进行校验
 
 
         //
+        saveSessionWithChannel(ctx, header.getMsisdn());
 
     }
 

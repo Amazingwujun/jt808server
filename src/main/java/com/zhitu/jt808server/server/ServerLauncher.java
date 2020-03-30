@@ -1,6 +1,7 @@
 package com.zhitu.jt808server.server;
 
 import com.zhitu.jt808server.server.codec.Jt808Decoder;
+import com.zhitu.jt808server.server.codec.Jt808Encoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -27,8 +28,11 @@ public class ServerLauncher {
 
     private ServerHandler serverHandler;
 
-    public ServerLauncher(ServerHandler serverHandler) {
+    private Jt808Encoder jt808Encoder;
+
+    public ServerLauncher(ServerHandler serverHandler, Jt808Encoder jt808Encoder) {
         this.serverHandler = serverHandler;
+        this.jt808Encoder = jt808Encoder;
     }
 
     /**
@@ -51,6 +55,7 @@ public class ServerLauncher {
                             ChannelPipeline pipeline = socketChannel.pipeline();
 
                             pipeline.addLast(new Jt808Decoder(1024));
+                            pipeline.addLast(jt808Encoder);
                             pipeline.addLast(serverHandler);
                         }
                     });

@@ -10,20 +10,15 @@ import io.netty.handler.codec.DecoderResult;
  */
 public class Jt808MessageFactory {
 
-    public static Jt808Message newMessage(Jt808Header header, Object payload) {
-        switch (header.getMessageId()) {
-            case SIGN_UP:
-                return null;
-            case SIGN_IN:
-                return null;
-            case PING:
-                return new Jt808PingMessage(header, DecoderResult.SUCCESS);
-            default:
-                throw new IllegalArgumentException("unknown message type: " + header.getMessageId());
-        }
+    public static Jt808Message newMessage(Jt808Header header, byte[] body) {
+        return new Jt808Message(header, body);
     }
 
     public static Jt808Message newInvalidMessage(Throwable cause) {
         return new Jt808Message(null, null, DecoderResult.failure(cause));
+    }
+
+    public static Jt808Message fromDecoder(byte[] original, Jt808Header header) {
+        return new Jt808Message(original, header);
     }
 }
