@@ -1,16 +1,17 @@
-package com.zhitu.jt808server.server.handler;
+package com.zhitu.jt808server.utils;
 
+import com.zhitu.jt808server.server.handler.Session;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 
 /**
- * 会话管理
+ * {@link com.zhitu.jt808server.server.handler.Session} 工具
  *
  * @author Jun
- * @date 2020-03-30 13:52
+ * @date 2020-03-30 17:49
  */
-abstract class AbstractSessionHandler implements MessageHandler {
+public class SessionUtils {
 
     /**
      * 生成 seqId
@@ -18,7 +19,7 @@ abstract class AbstractSessionHandler implements MessageHandler {
      * @param ctx {@link ChannelHandlerContext}
      * @return 消息ID
      */
-    int nextSequenceId(ChannelHandlerContext ctx) {
+    public static int nextSequenceId(ChannelHandlerContext ctx) {
         Session session = getSession(ctx);
         return session.increaseAndGetMessageId();
     }
@@ -29,7 +30,7 @@ abstract class AbstractSessionHandler implements MessageHandler {
      * @param ctx {@link ChannelHandlerContext}
      * @return clientId
      */
-    String clientId(ChannelHandlerContext ctx) {
+    public static String clientId(ChannelHandlerContext ctx) {
         Session session = getSession(ctx);
         return session.getMsisdn();
     }
@@ -40,7 +41,7 @@ abstract class AbstractSessionHandler implements MessageHandler {
      * @param ctx    {@link ChannelHandlerContext}
      * @param msisdn 客户端id - msisdn
      */
-    void saveSessionWithChannel(ChannelHandlerContext ctx, String msisdn) {
+    public static void saveSessionWithChannel(ChannelHandlerContext ctx, String msisdn) {
         Channel channel = ctx.channel();
         AttributeKey<Object> attr = AttributeKey.valueOf("session");
         Session session = new Session();
@@ -54,8 +55,7 @@ abstract class AbstractSessionHandler implements MessageHandler {
      * @param ctx {@link ChannelHandlerContext}
      * @return {@link Session}
      */
-    private Session getSession(ChannelHandlerContext ctx) {
+    private static Session getSession(ChannelHandlerContext ctx) {
         return (Session) ctx.channel().attr(AttributeKey.valueOf("session")).get();
     }
-
 }

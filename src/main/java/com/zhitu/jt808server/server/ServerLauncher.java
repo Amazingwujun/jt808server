@@ -3,10 +3,7 @@ package com.zhitu.jt808server.server;
 import com.zhitu.jt808server.server.codec.Jt808Decoder;
 import com.zhitu.jt808server.server.codec.Jt808Encoder;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -23,6 +20,7 @@ import javax.net.ssl.SSLException;
  * @author Jun
  * @date 2020-03-03 20:55
  */
+@ChannelHandler.Sharable
 @Component
 public class ServerLauncher {
 

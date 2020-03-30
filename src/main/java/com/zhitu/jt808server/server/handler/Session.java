@@ -15,7 +15,7 @@ public class Session {
 
     private String msisdn;
 
-    int increaseAndGetMessageId() {
+    public int increaseAndGetMessageId() {
         return ++seqId;
     }
 }

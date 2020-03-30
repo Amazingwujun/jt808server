@@ -15,8 +15,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class UniversalAck implements Jt808body {
 
-    private int sequenceId;
     private MessageId messageId;
+    private int sequenceId;
     private byte result;
 
     public byte[] toBytes(){

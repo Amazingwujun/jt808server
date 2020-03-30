@@ -143,9 +143,9 @@ public final class Jt808Decoder extends ByteToMessageDecoder {
         byte[] escapeBytes = ByteUtils.inboundEscape(frame);
 
         //验证校验码
-        if (!ByteUtils.isBccValid(escapeBytes)) {
-            return Jt808MessageFactory.newInvalidMessage(new DecoderException("bcc校验异常"));
-        }
+//        if (!ByteUtils.isBccValid(escapeBytes)) {
+//            return Jt808MessageFactory.newInvalidMessage(new DecoderException("bcc校验异常"));
+//        }
 
         //获取消息头,并校验剩余消息长度
         Jt808Header header = new Jt808Header(escapeBytes);
