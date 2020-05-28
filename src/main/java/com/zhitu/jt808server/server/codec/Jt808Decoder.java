@@ -153,7 +153,7 @@ public final class Jt808Decoder extends ByteToMessageDecoder {
         if (header.isSplit()) {
             headerLen = 16;
         }
-        if (frame.length - headerLen - 1 != header.getBodyLength()) {
+        if (escapeBytes.length - headerLen - 1 != header.getBodyLength()) {
             return Jt808MessageFactory.newInvalidMessage(new DecoderException("消息体长度异常"));
         }
 
